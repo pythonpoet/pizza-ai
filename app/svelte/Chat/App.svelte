@@ -11,6 +11,9 @@
 	const db = gun;
 	const chat_room = `chat/${session_id}`
 
+	let encrypt_key =  '#foo'; //Idea -> session_id
+	let encrypt_message = false;
+
 	let newMessage;
 	let messages = [];
   
@@ -19,7 +22,7 @@
 	let canAutoScroll = true;
 	let unreadMessages = false;
 
-	const eventSource = new EventSource('/events');
+/* 	const eventSource = new EventSource('/events');
 
 	eventSource.onmessage = function(event) {
 		console.log('Message from server:', event);
@@ -27,7 +30,7 @@
 
 	eventSource.onerror = function(error) {
 		console.error('EventSource failed:', error);
-	};
+	}; */
   
 	function autoScroll() {
 	  setTimeout(() => scrollBottom?.scrollIntoView({ behavior: 'auto' }), 50);
@@ -56,13 +59,11 @@
 		.map(match)
 		.once(async (data, id) => {
 		  if (data) {
-			// Key for end-to-end encryption
-			const key = '#foo';
-  
+			console.log("data is: ", data)
 			var message = {
 			  // transform the data
-			  who: await db.user(data).get('alias'), // a user might lie who they are! So let the user system detect whose data it is.
-			  what: (await SEA.decrypt(data.what, key)) + '', // force decrypt as text.
+			  who: data.hasOwnProperty('who') ? data.who: await db.user(data).get('alias'), // a user might lie who they are! So let the user system detect whose data it is.
+			  what: (await decrypt(data.what)) + '', // force decrypt as text.
 			  when: GUN.state.is(data, 'what'), // get the internal timestamp for the what property.
 			};
   
@@ -77,17 +78,49 @@
 		  }
 		});
 	});
+	async function encrypt(message){
+		if (encrypt_message){
+			return await SEA.encrypt(message, encrypt_key);
+		}else{return message}
+	}
+	async function decrypt(message){
+		if(encrypt_message){
+			return (await SEA.decrypt(message, encrypt_key)) + ''
+		}else{return message}
+	}
   
 	async function sendMessage() {
 		python_send_message(newMessage)
-	  const secret = await SEA.encrypt(newMessage, '#foo');
-	  const message = user.get('all').set({ what: secret });
-	  console.log(message)
-	  const index = new Date().toISOString();
-	  db.get(chat_room).get(index).put(message);
+		
+	  	const secret = await encrypt(newMessage);
+		  const msg= { 
+				what: secret,
+			}
+	  	const message = user.get('all').set(msg);
+		const index = new Date().toISOString();
+		db.get(chat_room).get(index).put(message)	;
+	  console.log("TP2")
 	  newMessage = '';
 	  canAutoScroll = true;
 	  autoScroll();
+	  python_get_message()
+	}
+	async function python_get_message(){
+		fetch('/get_message')
+        .then(response => response.json())
+        .then(async data => {
+			const secret = await encrypt(data.content)
+			const msg= { 
+				what: secret,
+				who: 'llm'
+			}
+	  		const message = user.get('all').set(msg);
+			const index = new Date().toISOString();
+			db.get(chat_room).get(index).put(message)	
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        })
 	}
   </script>
   

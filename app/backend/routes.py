@@ -9,7 +9,7 @@ import json
 base_url='http://100.101.54.114:11434'
 
 #from __main__ import app #, chaosLLM, user_id,user_name, session_id,t
-from app import app
+from app import app, llm
 #app = Flask(__name__)
 
 
@@ -43,7 +43,7 @@ message_format = [
     }
 ]
 
-
+message_content=''
 messages = []   
 def llm_response(msg, llm):
     stream = llm.invoke(msg['content'])
@@ -75,6 +75,7 @@ def session(init_session_id):
 
 @app.route('/send_message', methods=['POST'])
 def send_message():
+    global message_content
     data = request.json
     message_content = data['message']
     print(f'from python: {message_content}')
@@ -107,9 +108,15 @@ def session(init_session_id):
     #g.track_var["session_id"] = session_id
     return render_template('index.html', session_id=session_id) """
 
-@app.route('/get_ideas', methods=['GET'])
-def get_ideas():
-    return jsonify(list_of_strings)
+@app.route('/get_message', methods=['GET'])
+def get_message():
+    global message_content
+    print(f'prompt: {message_content}')
+    response = llm.chat(messages=[{
+            'role': 'user',
+            'content': message_content,
+            }])
+    return jsonify(response)
 
 
 """ @app.route('/send_message', methods=['POST'])

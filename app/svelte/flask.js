@@ -11,16 +11,5 @@ function python_send_message(message){
  var data = JSON.stringify({"message": message});
  xhr.send(data);
 return 
-fetch('/send_message', {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    body: 'message=' + encodeURIComponent(message)
-}).then(response => {
-    if (response.ok) {
-        console.log("ok")
-    }
-});
 }
 export {python_send_message};

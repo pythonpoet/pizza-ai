@@ -415,25 +415,29 @@ var ChatMessageApp = (function () {
     			t1 = text(t1_value);
     			t2 = space();
     			time = element("time");
-    			time.textContent = `${/*ts*/ ctx[3].toLocaleTimeString()}`;
+    			time.textContent = `${/*ts*/ ctx[4].toLocaleTimeString()}`;
     			t4 = space();
     			div3 = element("div");
     			t5 = text(t5_value);
     			attr_dev(img, "alt", "Tailwind CSS chat bubble component");
-    			if (!src_url_equal(img.src, img_src_value = /*avatar*/ ctx[2])) attr_dev(img, "src", img_src_value);
-    			add_location(img, file, 15, 4, 433);
+
+    			if (!src_url_equal(img.src, img_src_value = /*is_human*/ ctx[2]
+    			? /*avatar_human*/ ctx[3]
+    			: avatar_not_human)) attr_dev(img, "src", img_src_value);
+
+    			add_location(img, file, 16, 4, 613);
     			attr_dev(div0, "class", "w-10 rounded-full");
-    			add_location(div0, file, 14, 2, 396);
+    			add_location(div0, file, 15, 2, 576);
     			attr_dev(div1, "class", "chat-image avatar");
-    			add_location(div1, file, 13, 1, 361);
+    			add_location(div1, file, 14, 1, 541);
     			attr_dev(time, "class", "text-xs opacity-50");
-    			add_location(time, file, 20, 2, 566);
+    			add_location(time, file, 21, 2, 780);
     			attr_dev(div2, "class", "chat-header");
-    			add_location(div2, file, 18, 3, 520);
-    			attr_dev(div3, "class", "chat-bubble");
-    			add_location(div3, file, 22, 3, 647);
+    			add_location(div2, file, 19, 3, 734);
+    			attr_dev(div3, "class", "chat-bubble whitespace-pre-line");
+    			add_location(div3, file, 23, 3, 861);
     			attr_dev(div4, "class", `chat ${/*messageClass*/ ctx[1]}`);
-    			add_location(div4, file, 12, 2, 322);
+    			add_location(div4, file, 13, 2, 502);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -474,14 +478,17 @@ var ChatMessageApp = (function () {
     	return block;
     }
 
+    const avatar_not_human = 'https://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/HAL9000.svg/1920px-HAL9000.svg.png';
+
     function instance($$self, $$props, $$invalidate) {
     	let { $$slots: slots = {}, $$scope } = $$props;
     	validate_slots('App', slots, []);
     	let { message } = $$props;
     	let { sender } = $$props;
     	const messageClass = message.who === sender ? 'chat-start' : 'chat-end';
+    	const is_human = message.who === 'llm' ? false : true;
     	console.log(message, sender, message.who);
-    	const avatar = `https://api.dicebear.com/8.x/pixel-art/svg?seed=${message.who}`;
+    	const avatar_human = `https://api.dicebear.com/8.x/pixel-art/svg?seed=${message.who}`;
     	const ts = new Date(message.when);
 
     	$$self.$$.on_mount.push(function () {
@@ -502,33 +509,35 @@ var ChatMessageApp = (function () {
 
     	$$self.$$set = $$props => {
     		if ('message' in $$props) $$invalidate(0, message = $$props.message);
-    		if ('sender' in $$props) $$invalidate(4, sender = $$props.sender);
+    		if ('sender' in $$props) $$invalidate(5, sender = $$props.sender);
     	};
 
     	$$self.$capture_state = () => ({
     		message,
     		sender,
     		messageClass,
-    		avatar,
+    		is_human,
+    		avatar_human,
+    		avatar_not_human,
     		ts
     	});
 
     	$$self.$inject_state = $$props => {
     		if ('message' in $$props) $$invalidate(0, message = $$props.message);
-    		if ('sender' in $$props) $$invalidate(4, sender = $$props.sender);
+    		if ('sender' in $$props) $$invalidate(5, sender = $$props.sender);
     	};
 
     	if ($$props && "$$inject" in $$props) {
     		$$self.$inject_state($$props.$$inject);
     	}
 
-    	return [message, messageClass, avatar, ts, sender];
+    	return [message, messageClass, is_human, avatar_human, ts, sender];
     }
 
     class App extends SvelteComponentDev {
     	constructor(options) {
     		super(options);
-    		init(this, options, instance, create_fragment, safe_not_equal, { message: 0, sender: 4 });
+    		init(this, options, instance, create_fragment, safe_not_equal, { message: 0, sender: 5 });
 
     		dispatch_dev("SvelteRegisterComponent", {
     			component: this,

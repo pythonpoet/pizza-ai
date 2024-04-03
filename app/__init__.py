@@ -1,7 +1,7 @@
 from flask import Flask
 from .backend.chaosChain import *
 app = Flask(__name__)
-llm = ChaosLLM()
+llm = ChaosLLM(model='mistral:7b')
 from .backend.routes import *
 
 

@@ -32,11 +32,28 @@ class ChaosLLM:
         return response['message']['content']
     def chat(self, messages, model=None,format=None ,options = None):
         debug(f'to ollama ({model}): {messages}')
-
-        response = self.ollama.chat(messages=messages,options=options if options is not None else None,model=model if model is not None else self.model, format=format if not format == None else None)
-
-        debug(f'from ollama ({model}): {response}')
-        return response['message']
-    def stream(self, message):
-        pass
-
+        try:
+            response = self.ollama.chat(messages=messages,options=options if options is not None else None,model=model if model is not None else self.model, format=format if not format == None else None)
+            debug(f'from ollama ({model}): {response}')
+            return response['message']
+        except Exception as err:
+            print(f'Couldnt communicate with llm error: {err}')
+            return None
+    def stream(self, messages, model=None,format=None ,options = None):
+        debug(f'to ollama ({model}): {messages}')
+        try:
+            response=''
+            for chunk in self.ollama.chat(messages=messages,stream=True,options=options if options is not None else None,model=model if model is not None else self.model, format=format if not format == None else None):
+                response += chunk['message']['content']
+                yield chunk
+            self.messages.append(
+            {
+            'role': 'assistant',
+            'content': response,
+            },
+            )
+            debug(f'from ollama ({model}): {response}')
+            return response['message']
+        except Exception as err:
+            print(f'Couldnt communicate with llm error: {err}')
+            return None

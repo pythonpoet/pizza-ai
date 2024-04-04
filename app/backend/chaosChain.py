@@ -40,7 +40,7 @@ class ChaosLLM:
             print(f'Couldnt communicate with llm error: {err}')
             return None
     def stream(self, messages, model=None,format=None ,options = None):
-        debug(f'to ollama ({model}): {messages}')
+        debug(f'to ollama ({model if model is not None else self.model}): {messages}')
         try:
             response=''
             for chunk in self.ollama.chat(messages=messages,stream=True,options=options if options is not None else None,model=model if model is not None else self.model, format=format if not format == None else None):
@@ -52,8 +52,8 @@ class ChaosLLM:
             'content': response,
             },
             )
-            debug(f'from ollama ({model}): {response}')
-            return response['message']
+            debug(f'from ollama ({model if model is not None else self.model}): {response}')
+            #return response['message']
         except Exception as err:
             print(f'Couldnt communicate with llm error: {err}')
             return None

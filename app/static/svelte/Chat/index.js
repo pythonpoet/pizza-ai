@@ -5683,7 +5683,7 @@ var ChatApp = (function () {
     	return child_ctx;
     }
 
-    // (228:1) {:else}
+    // (209:1) {:else}
     function create_else_block(ctx) {
     	let main;
     	let login;
@@ -5695,7 +5695,7 @@ var ChatApp = (function () {
     			main = element("main");
     			create_component(login.$$.fragment);
     			attr_dev(main, "class", "svelte-1uqdzxd");
-    			add_location(main, file, 228, 3, 6608);
+    			add_location(main, file, 209, 3, 5858);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, main, anchor);
@@ -5722,14 +5722,14 @@ var ChatApp = (function () {
     		block,
     		id: create_else_block.name,
     		type: "else",
-    		source: "(228:1) {:else}",
+    		source: "(209:1) {:else}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (202:1) {#if $username}
+    // (183:1) {#if $username}
     function create_if_block(ctx) {
     	let main;
     	let each_blocks = [];
@@ -5781,22 +5781,22 @@ var ChatApp = (function () {
     			if (if_block) if_block.c();
     			if_block_anchor = empty();
     			attr_dev(div, "class", "dummy");
-    			add_location(div, file, 207, 2, 5986);
+    			add_location(div, file, 188, 2, 5236);
     			attr_dev(main, "class", "svelte-1uqdzxd");
-    			add_location(main, file, 202, 3, 5832);
+    			add_location(main, file, 183, 3, 5082);
     			attr_dev(input, "type", "text");
     			attr_dev(input, "placeholder", "Type a message...");
     			attr_dev(input, "maxlength", "100");
     			set_style(input, "height", "50px");
     			set_style(input, "font-size", "16px");
     			attr_dev(input, "class", "svelte-1uqdzxd");
-    			add_location(input, file, 211, 2, 6122);
+    			add_location(input, file, 192, 2, 5372);
     			attr_dev(button, "type", "submit");
     			button.disabled = button_disabled_value = !/*newMessage*/ ctx[0];
     			attr_dev(button, "class", "svelte-1uqdzxd");
-    			add_location(button, file, 214, 2, 6316);
+    			add_location(button, file, 195, 2, 5566);
     			attr_dev(form, "class", "bottom-form svelte-1uqdzxd");
-    			add_location(form, file, 210, 3, 6053);
+    			add_location(form, file, 191, 3, 5303);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, main, anchor);
@@ -5913,14 +5913,14 @@ var ChatApp = (function () {
     		block,
     		id: create_if_block.name,
     		type: "if",
-    		source: "(202:1) {#if $username}",
+    		source: "(183:1) {#if $username}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (204:2) {#each messages as message (message.when)}
+    // (185:2) {#each messages as message (message.when)}
     function create_each_block(key_1, ctx) {
     	let first;
     	let chatmessage;
@@ -5973,14 +5973,14 @@ var ChatApp = (function () {
     		block,
     		id: create_each_block.name,
     		type: "each",
-    		source: "(204:2) {#each messages as message (message.when)}",
+    		source: "(185:2) {#each messages as message (message.when)}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (218:3) {#if !canAutoScroll}
+    // (199:3) {#if !canAutoScroll}
     function create_if_block_1(ctx) {
     	let div;
     	let button;
@@ -5996,9 +5996,9 @@ var ChatApp = (function () {
     			if (if_block) if_block.c();
     			t = text("\r\n\t\t\t👇");
     			toggle_class(button, "red", /*unreadMessages*/ ctx[4]);
-    			add_location(button, file, 219, 4, 6450);
+    			add_location(button, file, 200, 4, 5700);
     			attr_dev(div, "class", "scroll-button");
-    			add_location(div, file, 218, 2, 6417);
+    			add_location(div, file, 199, 2, 5667);
     		},
     		m: function mount(target, anchor) {
     			insert_dev(target, div, anchor);
@@ -6039,14 +6039,14 @@ var ChatApp = (function () {
     		block,
     		id: create_if_block_1.name,
     		type: "if",
-    		source: "(218:3) {#if !canAutoScroll}",
+    		source: "(199:3) {#if !canAutoScroll}",
     		ctx
     	});
 
     	return block;
     }
 
-    // (221:3) {#if unreadMessages}
+    // (202:3) {#if unreadMessages}
     function create_if_block_2(ctx) {
     	let t;
 
@@ -6066,7 +6066,7 @@ var ChatApp = (function () {
     		block,
     		id: create_if_block_2.name,
     		type: "if",
-    		source: "(221:3) {#if unreadMessages}",
+    		source: "(202:3) {#if unreadMessages}",
     		ctx
     	});
 
@@ -6094,7 +6094,7 @@ var ChatApp = (function () {
     			div = element("div");
     			if_block.c();
     			attr_dev(div, "class", "container svelte-1uqdzxd");
-    			add_location(div, file, 200, 2, 5786);
+    			add_location(div, file, 181, 2, 5036);
     		},
     		l: function claim(nodes) {
     			throw new Error("options.hydrate only works if the component was compiled with the `hydratable: true` option");
@@ -6157,6 +6157,8 @@ var ChatApp = (function () {
     	return block;
     }
 
+    const stream_speed = 100;
+
     function instance($$self, $$props, $$invalidate) {
     	let debouncedWatchScroll;
     	let $username;
@@ -6167,7 +6169,10 @@ var ChatApp = (function () {
     	const session_id = document.data.session_id;
     	const db = gun;
     	const chat_room = `chat/${session_id}`;
+
+    	// encryption_key
     	let encrypt_key = '#foo'; //Idea -> session_id
+
     	let encrypt_message = false;
     	let newMessage;
     	let messages = [];
@@ -6176,15 +6181,6 @@ var ChatApp = (function () {
     	let canAutoScroll = true;
     	let unreadMessages = false;
 
-    	/* 	const eventSource = new EventSource('/events');
-
-    	eventSource.onmessage = function(event) {
-    		console.log('Message from server:', event);
-    	};
-
-    	eventSource.onerror = function(error) {
-    		console.error('EventSource failed:', error);
-    	}; */
     	function autoScroll() {
     		setTimeout(() => scrollBottom?.scrollIntoView({ behavior: 'auto' }), 50);
     		$$invalidate(4, unreadMessages = false);
@@ -6193,6 +6189,21 @@ var ChatApp = (function () {
     	function watchScroll(e) {
     		$$invalidate(3, canAutoScroll = (e.target.scrollTop || Infinity) > lastScrollTop);
     		lastScrollTop = e.target.scrollTop;
+    	}
+
+    	/*
+    	David - 04.04.2024
+    	A bug has been observed in which user_messages are written to gun_db 
+    	but no data is being recived on the other side.
+
+    	The problem seems to be only on the firefox browser. 
+    	The error still exists but is likely something related to gundb configuration.
+    	TODO solve issue :)
+    */
+    	function gun_sendMessage(msg) {
+    		const message = user.get('all').set(msg);
+    		const index = new Date().toISOString();
+    		db.get(chat_room).get(index).put(message);
     	}
 
     	onMount(() => {
@@ -6208,37 +6219,31 @@ var ChatApp = (function () {
     		};
 
     		// llm stream has to be assebled here
-    		var llm_response = '';
+    		var llm_message = null;
 
     		// Get Messages
     		db.get(chat_room).map(match).once(async (data, id) => {
     			if (data) {
-    				console.log("TP 1");
+    				console.log("log: data.who: ", data.who);
 
-    				if (data.hasOwnProperty('stream')) {
-    					const message_nr = llm_response === ''
-    					? messages.length
-    					: messages.length - 1;
+    				if (data.stream) {
+    					if (llm_message === null) {
+    						llm_message = true;
 
-    					console.log(message_nr);
-    					llm_response += await decrypt(data.what) + '';
+    						var message = {
+    							// transform the data
+    							who: data.who, // a user might lie who they are! So let the user system detect whose data it is.
+    							what: await decrypt(data.what) + '', // force decrypt as text.
+    							when: Gun$1.state.is(data, 'what'), // get the internal timestamp for the what property.
+    							
+    						};
 
-    					var message = {
-    						// transform the data
-    						who: data.who, // a user might lie who they are! So let the user system detect whose data it is.
-    						what: llm_response, // force decrypt as text.
-    						when: Gun$1.state.is(data, 'what'), // get the internal timestamp for the what property.
-    						
-    					};
-
-    					if (message_nr === message.length) {
     						$$invalidate(1, messages = [...messages.slice(-100), message].sort((a, b) => a.when - b.when));
     					} else {
-    						$$invalidate(1, messages[message_nr] = message, messages);
+    						$$invalidate(1, messages[messages.length - 1].what = await decrypt(data.what) + '', messages);
     					}
     				} else {
-    					console.log("TP 2");
-    					llm_response = '';
+    					llm_message = null;
 
     					var message = {
     						// transform the data
@@ -6279,11 +6284,24 @@ var ChatApp = (function () {
     	}
 
     	async function python_stream_llm_response(stream_id) {
-    		new Date().toISOString();
+    		//const index = new Date().toISOString();
+    		var doc = '';
+
+    		// Process messages from the queue at a controlled rate
+    		const processMessages = async () => {
+    			if (doc.length > 0) {
+    				const secret = await encrypt(doc);
+    				const msg = { what: secret, who: 'llm', stream: true };
+    				gun_sendMessage(msg);
+    			}
+    		};
+
     		const eventSource = new EventSource(`/stream_message/${stream_id}`);
+    		const intervalID = setInterval(processMessages, stream_speed);
 
     		eventSource.onerror = function (error) {
     			console.error('EventSource failed:', error);
+    			clearInterval(intervalID);
     		};
 
     		eventSource.onmessage = async function (event) {
@@ -6291,38 +6309,29 @@ var ChatApp = (function () {
 
     			if (message.done === true) {
     				eventSource.close();
+    				clearInterval(intervalID);
+    				processMessages();
     			} else {
-    				const secret = await encrypt(message.message.content);
-    				const index = new Date().toISOString();
-    				db.get(chat_room).get(index).put({ what: secret, who: 'llm', stream: true });
-    			} // Assuming message is sent as JSON
+    				doc += message.message.content;
+    			}
     		};
     	}
 
     	async function sendMessage() {
     		python_send_message(session_id, newMessage);
     		const secret = await encrypt(newMessage);
-    		const msg = { what: secret };
-    		const message = user.get('all').set(msg);
-    		const index = new Date().toISOString();
-    		db.get(chat_room).get(index).put(message);
-    		console.log("TP2");
+
+    		const msg = {
+    			what: secret,
+    			who: await user.get('alias'),
+    			stream: false
+    		};
+
+    		gun_sendMessage(msg);
     		$$invalidate(0, newMessage = '');
     		$$invalidate(3, canAutoScroll = true);
     		autoScroll();
     		python_stream_llm_response(session_id);
-    	}
-
-    	async function python_get_message() {
-    		fetch('/get_message').then(response => response.json()).then(async data => {
-    			const secret = await encrypt(data.content);
-    			const msg = { what: secret, who: 'llm' };
-    			const message = user.get('all').set(msg);
-    			const index = new Date().toISOString();
-    			db.get(chat_room).get(index).put(message);
-    		}).catch(error => {
-    			console.error('Error:', error);
-    		});
     	}
 
     	const writable_props = [];
@@ -6356,6 +6365,7 @@ var ChatApp = (function () {
     		session_id,
     		db,
     		chat_room,
+    		stream_speed,
     		encrypt_key,
     		encrypt_message,
     		newMessage,
@@ -6366,11 +6376,11 @@ var ChatApp = (function () {
     		unreadMessages,
     		autoScroll,
     		watchScroll,
+    		gun_sendMessage,
     		encrypt,
     		decrypt,
     		python_stream_llm_response,
     		sendMessage,
-    		python_get_message,
     		debouncedWatchScroll,
     		$username
     	});

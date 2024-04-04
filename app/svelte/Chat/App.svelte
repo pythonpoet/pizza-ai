@@ -11,7 +11,11 @@
 	const session_id =  document.data.session_id;
 	const db = gun;
 	const chat_room = `chat/${session_id}`
+	
+	// defines stream speed of llm response
+	const stream_speed = 100;
 
+	// encryption_key
 	let encrypt_key =  '#foo'; //Idea -> session_id
 	let encrypt_message = false;
 
@@ -22,16 +26,6 @@
 	let lastScrollTop;
 	let canAutoScroll = true;
 	let unreadMessages = false;
-
-/* 	const eventSource = new EventSource('/events');
-
-	eventSource.onmessage = function(event) {
-		console.log('Message from server:', event);
-	};
-
-	eventSource.onerror = function(error) {
-		console.error('EventSource failed:', error);
-	}; */
   
 	function autoScroll() {
 	  setTimeout(() => scrollBottom?.scrollIntoView({ behavior: 'auto' }), 50);
@@ -41,6 +35,20 @@
 	function watchScroll(e) {
 	  canAutoScroll = (e.target.scrollTop || Infinity) > lastScrollTop;
 	  lastScrollTop = e.target.scrollTop;
+	}
+	/*
+		David - 04.04.2024
+		A bug has been observed in which user_messages are written to gun_db 
+		but no data is being recived on the other side.
+
+		The problem seems to be only on the firefox browser. 
+		The error still exists but is likely something related to gundb configuration.
+		TODO solve issue :)
+	*/
+	function gun_sendMessage(msg){
+		const message = user.get('all').set(msg);
+		const index = new Date().toISOString();
+		db.get(chat_room).get(index).put(message);
 	}
   
 	$: debouncedWatchScroll = debounce(watchScroll, 1000);
@@ -56,34 +64,34 @@
 	  };
 	  
 	  // llm stream has to be assebled here
-	  var llm_response = ''
+	  var llm_message=null
 	  // Get Messages
 	  db.get(chat_room)
 		.map(match)
 		.once(async (data, id) => {
 		  if (data) {
-			console.log("TP 1")
-			if (data.hasOwnProperty('stream')){
+			console.log("log: data.who: ", data.who)
 
-				const message_nr = llm_response===''? messages.length: messages.length-1
-				console.log(message_nr)
-				llm_response += (await decrypt(data.what)) + ''
-				var message = {
-					// transform the data
-					who: data.who, // a user might lie who they are! So let the user system detect whose data it is.
-					what: llm_response, // force decrypt as text.
-					when: Gun.state.is(data, 'what'), // get the internal timestamp for the what property.
-				};
-				if (message_nr === message.length){
+			
+			if (data.stream){
+				if (llm_message=== null){
+					llm_message = true
+					 var message = {
+						// transform the data
+						who: data.who, // a user might lie who they are! So let the user system detect whose data it is.
+						what: (await decrypt(data.what)) + '', // force decrypt as text.
+						when: Gun.state.is(data, 'what'), // get the internal timestamp for the what property.
+					};
 					messages = [...messages.slice(-100), message].sort((a, b) => a.when - b.when);
 				}else{
-					messages[message_nr]=message	
+					
+					messages[messages.length-1].what  = (await decrypt(data.what)) + ''
 				}
-				
-
+	
 			}else{
-				console.log("TP 2")
-				llm_response= ''
+
+				llm_message=null
+
 				var message = {
 					// transform the data
 					who: await db.user(data).get('alias'), // a user might lie who they are! So let the user system detect whose data it is.
@@ -115,50 +123,41 @@
 	}
 	async function python_stream_llm_response(stream_id){
 	
-    const index = new Date().toISOString();
+    //const index = new Date().toISOString();
 	var doc = '';
+	
+	// Process messages from the queue at a controlled rate
+	const processMessages = async () => {
+
+		if(doc.length>0){
+			const secret = await encrypt(doc);
+			const msg = { 
+				what: secret,
+				who: 'llm',
+				stream: true
+			}
+			gun_sendMessage(msg)
+		}
+		
+	}
 	const eventSource = new EventSource(`/stream_message/${stream_id}`);
+	const intervalID = setInterval(processMessages, stream_speed);
 	eventSource.onerror = function(error) {
 		console.error('EventSource failed:', error);
+		clearInterval(intervalID)
 	};
-	
+
 
 	eventSource.onmessage = async function(event) {
 		const message = JSON.parse(event.data);
 		if (message.done === true){
 			eventSource.close()
+			clearInterval(intervalID)
+			processMessages()
 		}else{
-			const secret = await encrypt(message.message.content);
-			
-			const index = new Date().toISOString();
-			db.get(chat_room).get(index).put({ 
-				what: secret,
-				who: 'llm',
-				stream: true
-			})
-			
-			 // Assuming message is sent as JSON
+			doc += message.message.content
 		}
 	};
-	async function handleMessage(){
-		const secret = await encrypt(doc);
-			console.log("response = ", secret)
-			const index = new Date().toISOString();
-			db.get(chat_room).get(index).put({ 
-				what: secret,
-				who: 'llm',
-				stream: true
-			})
-	}
-	// Process messages from the queue at a controlled rate
-	const processMessages = () => {
-    if (messageQueue.length > 0) {
-        const message = messageQueue.shift();
-        handleMessage(message);
-    }
-    // Adjust the delay time (in milliseconds) to control the rate
-    setTimeout(processMessages, 100); // Process one message every 100 milliseconds
-};
 }
   
 	async function sendMessage() {
@@ -168,33 +167,15 @@
 	  	const secret = await encrypt(newMessage);
 		  const msg= { 
 				what: secret,
+				who: await user.get('alias'),
+				stream: false
 			}
-	  	const message = user.get('all').set(msg);
-		const index = new Date().toISOString();
-		db.get(chat_room).get(index).put(message)	;
-	  console.log("TP2")
+		gun_sendMessage(msg)
+	  
 	  newMessage = '';
 	  canAutoScroll = true;
 	  autoScroll();
 	  python_stream_llm_response(session_id)
-	}
-
-	async function python_get_message(){
-		fetch('/get_message')
-        .then(response => response.json())
-        .then(async data => {
-			const secret = await encrypt(data.content)
-			const msg= { 
-				what: secret,
-				who: 'llm'
-			}
-	  		const message = user.get('all').set(msg);
-			const index = new Date().toISOString();
-			db.get(chat_room).get(index).put(message)	
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        })
 	}
   </script>
   

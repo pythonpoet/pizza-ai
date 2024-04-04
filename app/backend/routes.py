@@ -60,8 +60,6 @@ class Session:
             'content': response,
             },
         )
-        
-            #self.stream_init = True
 
 sessions={}
 
@@ -86,6 +84,8 @@ def session(session_id):
 
     if not session_id in sessions.keys():
         sessions[session_id] = Session(session_id=session_id)
+        print("chaos_llm messages: ", sessions[session_id].llm.messages)
+        print("session_messages: ",sessions[session_id].messages )
     
     # TODO add user to session here
     
